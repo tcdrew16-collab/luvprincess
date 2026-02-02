@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Wint 💖</title>
+<style>
+  * { box-sizing: border-box; margin:0; padding:0; }
+
+  body {
+    margin: 0;
+    height: 100vh;
+    background: linear-gradient(180deg, #33001a, #660033);
+    overflow: hidden;
+    font-family: Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    text-align: center;
+  }
+
+  .bg-heart {
+    position: absolute;
+    color: rgba(255,182,193,0.3);
+    font-size: 20px;
+    animation: floatUp 8s linear infinite;
+    pointer-events: none; /* FIX: makes sure hearts don't block button clicks */
+    z-index: 0;
+  }
+
+  @keyframes floatUp {
+    from { transform: translateY(100vh) scale(1); opacity:1; }
+    to { transform: translateY(-10vh) scale(1.5); opacity:0; }
+  }
+
+  .card {
+    background: rgba(0,0,0,0.35);
+    padding: 45px 30px;
+    border-radius: 25px;
+    width: 90%;
+    max-width: 400px;
+    z-index: 2; /* FIX: above floating hearts */
+    box-shadow: 0 25px 50px rgba(0,0,0,0.5);
+    position: relative;
+  }
+
+  h1 { font-size: 32px; margin-bottom: 20px; }
+  .poem { font-size: 18px; font-weight: 700; line-height: 1.6; margin-bottom: 30px; }
+  h2 { margin-bottom: 20px; font-size: 22px; }
+
+  .buttons { display:flex; justify-content:center; gap:20px; position:relative; height:60px; z-index:2; }
+
+  button {
+    padding: 14px 28px;
+    font-size: 17px;
+    border-radius: 30px;
+    border: none;
+    cursor: pointer;
+    transition: 0.3s ease;
+    z-index: 2; /* FIX: ensure buttons clickable above hearts */
+  }
+
+  #yes { background:white; color:#ff4d6d; font-weight:bold; }
+  #no { background:transparent; color:white; border:2px solid white; }
+
+  .boom-heart {
+    position: absolute;
+    font-size: 26px;
+    animation: explode 1.8s ease-out forwards;
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  @keyframes explode {
+    0% { transform: scale(0); opacity:1; }
+    100% { transform: translate(var(--x), var(--y)) scale(1.5); opacity:0; }
+  }
+
+  #thank-overlay {
+    position: fixed;
+    top:0; left:0;
+    width:100vw; height:100vh;
+    background: rgba(0,0,0,0.85);
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    font-size: 36px;
+    font-weight:700;
+    color:#ffb3c6;
+    flex-direction:column;
+    z-index:10;
+    display:none;
+  }
+</style>
+</head>
+
+<body>
+<div class="card">
+  <h1>Wint 💕</h1>
+
+  <div class="poem">
+    Wint, you’re so pretty it feels unreal sometimes.<br>
+    Every smile you got hit me different.<br>
+    If dreams had a name, it'd sound like you.<br>
+    I love the way you make me feel just by being you my pretty princess.<br>
+    That’s why I had to ask this honestly…<br><br>
+  </div>
+
+  <h2>Will you be my Valentine?</h2>
+
+  <div class="buttons">
+    <button id="yes">YES 💘</button>
+    <button id="no">NO 😳</button>
+  </div>
+</div>
+
+<div id="thank-overlay">
+  Thankchuu my prettiest hottest sweetest mommy princess Wint 💕✨
+</div>
+
+<script>
+  // Floating hearts
+  function createBGHeart(){
+    const heart = document.createElement("div");
+    heart.className = "bg-heart";
+    heart.innerHTML = "❤️";
+    heart.style.left = Math.random()*100 + "vw";
+    heart.style.fontSize = Math.random()*20+15 + "px";
+    heart.style.animationDuration = Math.random()*4+6 + "s";
+    document.body.appendChild(heart);
+    setTimeout(()=>heart.remove(),8000);
+  }
+  setInterval(createBGHeart,300);
+
+  const noBtn = document.getElementById("no");
+  const yesBtn = document.getElementById("yes");
+  const thankOverlay = document.getElementById("thank-overlay");
+
+  let noPressCount = 0;
+
+  noBtn.addEventListener("click", () => {
+    // shrink NO
+    noBtn.style.transform = "scale(0.5)";
+    noBtn.style.transition = "transform 0.3s ease";
+
+    // grow YES incrementally
+    const currentScale = parseFloat(getComputedStyle(yesBtn).transform.split(',')[3]) || 1;
+    const newScale = currentScale + 0.2;
+    yesBtn.style.transform = scale(${newScale});
+    yesBtn.style.transition = "transform 0.3s ease";// mini explosion on YES
+    for(let i=0;i<15;i++){ explodeHeartAtYes(); }
+
+    noPressCount++;
+    if(noPressCount === 4){ // after 4 NO presses, full YES explosion
+      for(let i=0;i<120;i++){ explodeHeart(); }
+      setTimeout(()=>{
+        thankOverlay.style.display="flex";
+        thankOverlay.innerHTML = "Thank you, Wint… my soft, sweet, princess 💕✨";
+      }, 1800);
+    }
+  });
+
+  function explodeHeartAtYes(){
+    const heart=document.createElement("div");
+    heart.className="boom-heart";
+    heart.innerHTML="❤️";
+    const angle=Math.random()*2*Math.PI;
+    const distance=Math.random()*80+30;
+    const rect = yesBtn.getBoundingClientRect();
+    const x0 = rect.left + rect.width/2;
+    const y0 = rect.top + rect.height/2;
+
+    heart.style.setProperty("--x", Math.cos(angle)*distance+"px");
+    heart.style.setProperty("--y", Math.sin(angle)*distance+"px");
+    heart.style.left = x0 + "px";
+    heart.style.top = y0 + "px";
+    document.body.appendChild(heart);
+    setTimeout(()=>heart.remove(),1500);
+  }
+
+  // YES button full explosion + overlay
+  yesBtn.addEventListener("click",()=>{
+    for(let i=0;i<120;i++){ explodeHeart(); }
+    setTimeout(()=>{
+      thankOverlay.style.display="flex";
+      thankOverlay.innerHTML = "Thank you, Wint… my soft, sweet, princess 💕✨";
+    }, 1800);
+  });
+
+  function explodeHeart(){
+    const heart=document.createElement("div");
+    heart.className="boom-heart";
+    heart.innerHTML="❤️";
+    const angle=Math.random()*2*Math.PI;
+    const distance=Math.random()*300+50;
+    heart.style.setProperty("--x", Math.cos(angle)*distance+"px");
+    heart.style.setProperty("--y", Math.sin(angle)*distance+"px");
+    heart.style.left="50%";
+    heart.style.top="50%";
+    document.body.appendChild(heart);
+    setTimeout(()=>heart.remove(),1800);
+  }
+</script>
+</body>
+</html>
